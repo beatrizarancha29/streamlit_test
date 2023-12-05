@@ -2,6 +2,13 @@ import streamlit as st
 from PIL import Image
 import pandas as pd
 import numpy as np
+import requests
+
+# Function to get weather data from the external API
+def get_weather_data(city):
+    api_key = 'your_weather_api_key'
+    response = requests.get(f'https://api.weatherapi.com/v1/forecast.json?key={api_key}&q={city}&days=30')
+    return response.json()['forecast']['forecastday']
 
 # Dummy data for illustration (replace this with your actual data)
 temperature_data = pd.DataFrame({
@@ -26,7 +33,15 @@ a3.metric("Humidity", "-", "-")  # Replace with actual data or remove if not nee
 
 # Row B
 b1, b2, b3, b4 = st.columns(4)
-b1.metric("Temperature", f"{temperature_data['temperature'][0]:.2f} °F", "-")
+
+# Fetch weather data for the first day
+city_name = "Barcelona"  # You can make it dynamic based on user input
+weather_data = get_weather_data(city_name)
+first_day_temperature = weather_data[0]['day']['avgtemp_c']
+
+b1.metric("Temperature", f"{first_day_temperature:.2f} °C", "-")
+
+# Continue with existing metrics
 b2.metric("Electricity Price", f"{electricity_prices[0]:.2f} $/kWh", "-")
 b3.metric("Humidity", "-", "-")  # Replace with actual data or remove if not needed
 b4.metric("Humidity", "-", "-")  # Replace with actual data or remove if not needed
@@ -55,5 +70,5 @@ with d1:
 with d2:
     st.markdown('### Statistics')
     # Replace this with any statistics or summary you want to display
-    st.text(f"Average Temperature: {temperature_data['temperature'].mean():.2f} °F")
+    st.text(f"Average Temperature: {temperature_data['temperature'].mean():.2f} °C")
     st.text(f"Average Electricity Price: {np.mean(electricity_prices):.2f} $/kWh")
