@@ -1,18 +1,15 @@
 import streamlit as st
 from PIL import Image
 import pandas as pd
-import matplotlib.pyplot as plt
 import numpy as np
 
 # Dummy data for illustration (replace this with your actual data)
 temperature_data = pd.DataFrame({
     'date': pd.date_range(start='2023-12-01', periods=30),
-    'temperature': [math.sin(math.pi * i / 15) * 20 + 50 for i in range(30)],
+    'temperature': np.random.uniform(50, 70, size=30),
 })
 
-electricity_prices = np.array([0.10, 0.15, 0.20, 0.25, 0.30, 0.35, 0.40, 0.45, 0.50, 0.55,
-                               0.60, 0.65, 0.70, 0.75, 0.80, 0.85, 0.90, 0.85, 0.80, 0.75,
-                               0.70, 0.65, 0.60, 0.55, 0.50, 0.45, 0.40, 0.35, 0.30, 0.25])
+electricity_prices = np.random.uniform(0.10, 0.50, size=30)
 
 # Page setting
 st.set_page_config(layout="wide")
