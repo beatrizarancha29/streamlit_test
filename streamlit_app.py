@@ -6,7 +6,7 @@ import requests
 
 # Function to get weather data from the external API
 def get_weather_data(city):
-    api_key = 'your_weather_api_key'
+    api_key = '46b2788544324cc8ada143152230512'
     response = requests.get(f'https://api.weatherapi.com/v1/forecast.json?key={api_key}&q={city}&days=30')
     return response.json()['forecast']['forecastday']
 
