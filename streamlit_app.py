@@ -1,7 +1,6 @@
 import streamlit as st
 from PIL import Image
 import pandas as pd
-import numpy as np
 import requests
 
 # Function to get weather data from the external API
@@ -29,14 +28,19 @@ b1, b2, b3, b4 = st.columns(4)
 # Fetch weather data for the entire month
 city_name = "New York"  # You can make it dynamic based on user input
 weather_data = get_weather_data(city_name)
-temperatures = [day['day']['avgtemp_c'] for day in weather_data]
-dates = [day['date'] for day in weather_data]
+
+# Extract temperature and date data from the API response
+temperatures = [day['day'].get('avgtemp_c') for day in weather_data if 'day' in day and 'avgtemp_c' in day['day']]
+dates = [day['date'] for day in weather_data if 'date' in day]
 
 # Update the Temperature metric to display the entire month's forecast
-b1.metric("Temperature", f"Min: {min(temperatures):.2f} °C, Max: {max(temperatures):.2f} °C", "-")
+if temperatures:
+    b1.metric("Temperature", f"Min: {min(temperatures):.2f} °C, Max: {max(temperatures):.2f} °C", "-")
+else:
+    b1.warning("Temperature data not available")
 
 # Continue with existing metrics
-b2.metric("Electricity Price", f"{np.random.uniform(0.10, 0.50):.2f} $/kWh", "-")
+b2.metric("Electricity Price", f"{round(min(0.10, 0.50), 2)} - {round(max(0.10, 0.50), 2)} $/kWh", "-")
 b3.metric("Humidity", "-", "-")  # Replace with actual data or remove if not needed
 b4.metric("Humidity", "-", "-")  # Replace with actual data or remove if not needed
 
@@ -44,25 +48,34 @@ b4.metric("Humidity", "-", "-")  # Replace with actual data or remove if not nee
 c1, c2 = st.columns((7, 3))
 with c1:
     st.markdown('### Temperature Trend')
-    # Replace this with your actual line chart or visualization for temperature
-    st.line_chart(pd.DataFrame({'Temperature': temperatures}, index=dates))
+    if temperatures:
+        # Use an appropriate graph for temperature, e.g., line chart or area chart
+        st.line_chart(pd.DataFrame({'Temperature': temperatures}, index=dates))
+    else:
+        st.warning("Temperature data not available")
 with c2:
     st.markdown('### Electricity Price Trend')
     # Replace this with your actual line chart or visualization for electricity prices
-    st.line_chart([np.random.uniform(0.10, 0.50) for _ in range(30)])
+    st.line_chart([round(np.random.uniform(0.10, 0.50), 2) for _ in range(30)])
 
 # Row D
 d1, d2 = st.columns((7, 3))
 with d1:
     st.markdown('### Combined Trends')
     # Replace this with your actual line chart or visualization for both temperature and electricity prices
-    combined_data = pd.DataFrame({
-        'Temperature': temperatures,
-        'Electricity Price': [np.random.uniform(0.10, 0.50) for _ in range(30)],
-    }, index=dates)
-    st.line_chart(combined_data)
+    if temperatures:
+        combined_data = pd.DataFrame({
+            'Temperature': temperatures,
+            'Electricity Price': [round(np.random.uniform(0.10, 0.50), 2) for _ in range(30)],
+        }, index=dates)
+        st.line_chart(combined_data)
+    else:
+        st.warning("Combined trends not available")
 with d2:
     st.markdown('### Statistics')
     # Replace this with any statistics or summary you want to display
-    st.text(f"Average Temperature: {np.mean(temperatures):.2f} °C")
-    st.text(f"Average Electricity Price: {np.mean([np.random.uniform(0.10, 0.50) for _ in range(30)]):.2f} $/kWh")
+    if temperatures:
+        st.text(f"Average Temperature: {round(np.mean(temperatures), 2)} °C")
+        st.text(f"Average Electricity Price: {round(np.mean([np.random.uniform(0.10, 0.50) for _ in range(30)]), 2)} $/kWh")
+    else:
+        st.warning("Statistics not available")
