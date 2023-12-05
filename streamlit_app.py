@@ -2,6 +2,7 @@ import streamlit as st
 from PIL import Image
 import pandas as pd
 import requests
+import numpy as np  # Add this line to import NumPy
 
 # Function to get weather data from the external API
 def get_weather_data(city):
