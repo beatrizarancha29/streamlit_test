@@ -2,7 +2,7 @@ import streamlit as st
 from PIL import Image
 import pandas as pd
 import requests
-import numpy as np  # Add this line to import NumPy
+import numpy as np
 
 # Function to get weather data from the external API
 def get_weather_data(city):
@@ -62,17 +62,6 @@ with c2:
 # Row D
 d1, d2 = st.columns((7, 3))
 with d1:
-    st.markdown('### Combined Trends')
-    # Replace this with your actual line chart or visualization for both temperature and electricity prices
-    if temperatures:
-        combined_data = pd.DataFrame({
-            'Temperature': temperatures,
-            'Electricity Price': [round(np.random.uniform(0.10, 0.50), 2) for _ in range(30)],
-        }, index=dates)
-        st.line_chart(combined_data)
-    else:
-        st.warning("Combined trends not available")
-with d2:
     st.markdown('### Statistics')
     # Replace this with any statistics or summary you want to display
     if temperatures:
@@ -80,3 +69,5 @@ with d2:
         st.text(f"Average Electricity Price: {round(np.mean([np.random.uniform(0.10, 0.50) for _ in range(30)]), 2)} $/kWh")
     else:
         st.warning("Statistics not available")
+with d2:
+    pass  # Removed the content of the second column (previously combined trend)
