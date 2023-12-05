@@ -6,7 +6,7 @@ import numpy as np
 
 # Dummy data for illustration (replace this with your actual data)
 temperature_data = pd.DataFrame({
-    'date': pd.date_range(start='2023-12-01', end='2023-12-30'),
+    'date': pd.date_range(start='2023-12-01', periods=30),
     'temperature': [math.sin(math.pi * i / 15) * 20 + 50 for i in range(30)],
 })
 
