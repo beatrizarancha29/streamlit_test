@@ -104,7 +104,10 @@ if real_time_prices:
 
     # Plot the real-time electricity prices for the day
     df_prices = pd.DataFrame({'Time': real_time_times, 'Price': real_time_prices})
-    df_prices['Time'] = pd.to_datetime(df_prices['Time'])
+    df_prices['Time'] = pd.to_datetime(df_prices['Time'])  # Convert to datetime
+    
+    # Ensure the x-axis shows time in the format "0000 0100" up to "2400"
+    df_prices['Time'] = df_prices['Time'].dt.strftime('%H%M')
     
     fig, ax = plt.subplots()
     ax.plot(df_prices['Time'], df_prices['Price'], label='Real-time Prices', marker='o')
