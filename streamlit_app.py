@@ -83,8 +83,13 @@ else:
 weather_data_day = get_weather_data(city_name, days=1)
 
 # Extract temperature and date data from the API response for the day
-temperatures_day = [hour['hour'].get('temp_c') for hour in weather_data_day[0]['hour']]
-hours_day = [datetime.datetime.strptime(hour['time'], '%Y-%m-%d %H:%M') for hour in weather_data_day[0]['hour']]
+try:
+    temperatures_day = [hour['hour'].get('temp_c') for hour in weather_data_day[0]['hour']]
+    hours_day = [datetime.datetime.strptime(hour['time'], '%Y-%m-%d %H:%M') for hour in weather_data_day[0]['hour']]
+except (KeyError, TypeError):
+    st.warning("Temperature data not available for the day")
+    temperatures_day = []
+    hours_day = []
 
 # Update the Temperature metric to display the entire day's forecast
 if temperatures_day:
