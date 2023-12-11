@@ -124,7 +124,7 @@ if real_time_prices:
     ax.plot_date(df_prices['Time'], df_prices['Price'], fmt='o', label='Real-time Prices', color='blue')
     
     # Highlight the hour closest to the current time in red
-    nearest_hour_index = np.argmin(np.abs(np.array([t.hour for t in df_prices['Time']]) - current_hour))
+    nearest_hour_index = np.argmin(np.abs(np.array([t.hour for t in pd.to_datetime(df_prices['Time'].values)]) - current_hour))
     ax.plot_date(df_prices['Time'][nearest_hour_index], df_prices['Price'][nearest_hour_index],
                  fmt='o', color='red', markersize=10, label=f'Current Hour: {current_hour}:00')
 
