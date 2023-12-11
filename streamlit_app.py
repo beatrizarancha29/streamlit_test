@@ -89,8 +89,8 @@ if sensor_data:
 # Row B
 b1, b2, b3, b4 = st.columns(4)
 
-# Fetch weather data for the entire month
-city_name = "New York"  # You can make it dynamic based on user input
+# Fetch weather data for the entire month in Barcelona
+city_name = "Barcelona"  # Dynamically set to Barcelona
 weather_data = get_weather_data(city_name)
 
 # Extract temperature and date data from the API response
@@ -105,8 +105,8 @@ else:
 
 # Continue with existing metrics
 b2.metric("Electricity Price", f"{round(min(0.10, 0.50), 2)} - {round(max(0.10, 0.50), 2)} $/kWh", "-")
-b3.metric("Humidity", "-", "-")  # Replace with actual data or remove if not needed
-b4.metric("Humidity", "-", "-")  # Replace with actual data or remove if not needed
+b3.metric("LED Status", "-", "-")
+b4.metric("LED Status", "-", "-")
 
 # Row C
 c1, c2 = st.columns((7, 3))
