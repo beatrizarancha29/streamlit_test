@@ -39,7 +39,9 @@ def get_electricity_price_for_date(date, hour):
                 if 'values' in item['attributes']:
                     # Assuming the API response contains a 'values' field with a 'value' for the electricity price
                     price = item['attributes']['values'][0]['value']
-                    return price
+                    # Convert price from €/MWh to €/kWh
+                    price_per_kwh = price / 1000
+                    return price_per_kwh
 
             print(f"Error: 'values' key not found in 'attributes'. Response: {data}")
             return None
@@ -74,16 +76,16 @@ a1.image(Image.open('autoprice.png'))
 # Display Temperature Sensor 1, Temperature Sensor 2, and LED Status
 sensor_data = get_sensor_data()
 if sensor_data:
-    lines = sensor_data.splitlines()
+    lines = sensor_data.split(', ')
     for line in lines:
         if "Temperature 1" in line:
-            temp_sensor1 = line.split(':')[1].strip()
+            temp_sensor1 = line.split(': ')[1].replace('°K', '°C')
             a2.metric("Temperature Sensor 1", temp_sensor1, "-")
         elif "Temperature 2" in line:
-            temp_sensor2 = line.split(':')[1].strip()
+            temp_sensor2 = line.split(': ')[1].replace('°K', '°C')
             a3.metric("Temperature Sensor 2", temp_sensor2, "-")
         elif "LED Status" in line:
-            led_status = line.split(':')[1].strip()
+            led_status = line.split(': ')[1]
             a2.metric("LED Status", led_status, "-")
 
 # Row B
@@ -104,7 +106,7 @@ else:
     b1.warning("Temperature data not available")
 
 # Continue with existing metrics
-b2.metric("Electricity Price", f"{round(min(0.10, 0.50), 2)} - {round(max(0.10, 0.50), 2)} $/kWh", "-")
+b2.metric("Electricity Price", f"{round(min(0.10, 0.50), 2)} - {round(max(0.10, 0.50), 2)} €/kWh", "-")
 b3.metric("LED Status", "-", "-")
 b4.metric("LED Status", "-", "-")
 
@@ -127,7 +129,7 @@ prices = []
 
 for hour in hours_of_day:
     price = get_electricity_price_for_date(previous_day, hour)
-    print(f"The electricity price for {previous_day} {hour} is {price} €/MWh at {hour}:00.")
+    print(f"The electricity price for {previous_day} {hour} is {price} €/kWh at {hour}:00.")
     
     # Append the price to the array
     prices.append(price)
@@ -138,7 +140,7 @@ with d1:
     plt.plot(hours_of_day, prices, marker='o')
     plt.title(f'Electricity Prices on {previous_day}')
     plt.xlabel('Hour of the Day')
-    plt.ylabel('Electricity Price (€/MWh)')
+    plt.ylabel('Electricity Price (€/kWh)')
     st.pyplot(plt)
 
 with d2:
@@ -146,7 +148,7 @@ with d2:
     # Replace this with any statistics or summary you want to display
     if temperatures:
         st.text(f"Average Temperature: {round(np.mean(temperatures), 2)} °C")
-        st.text(f"Average Electricity Price: {round(np.mean(prices), 2)} €/MWh")
+        st.text(f"Average Electricity Price: {round(np.mean(prices), 2)} €/kWh")
     else:
         st.warning("Statistics not available")
 
