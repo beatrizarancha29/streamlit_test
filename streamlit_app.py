@@ -71,7 +71,7 @@ weather_data = get_weather_data(city_name)
 
 # Extract temperature and date data from the API response
 temperatures = [day['day'].get('avgtemp_c') for day in weather_data if 'day' in day and 'avgtemp_c' in day['day']]
-dates = [day['date'] for day in weather_data if 'date' in day]
+dates = [datetime.datetime.strptime(day['date'], '%Y-%m-%d') for day in weather_data if 'date' in day]
 
 # Update the Temperature metric to display the entire month's forecast
 if temperatures:
