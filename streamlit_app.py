@@ -12,8 +12,8 @@ def get_weather_data(city):
     response = requests.get(f'https://api.weatherapi.com/v1/forecast.json?key={api_key}&q={city}&days=30')
     return response.json()['forecast']['forecastday']
 
-# Function to get the electricity prices for a specific day and hour
-def get_electricity_price_for_date(date, hour):
+# Function to get the electricity prices for the current day and hour
+def get_current_electricity_price():
     # Actual values for endpoint, get_archives, and headers
     endpoint = 'https://apidatos.ree.es'
     get_archives = '/es/datos/mercados/precios-mercados-tiempo-real'
@@ -22,9 +22,9 @@ def get_electricity_price_for_date(date, hour):
         'Content-Type': 'application/json',
         'Host': 'apidatos.ree.es'
     }
-    
-    start_date = f'{date}T{hour}:00'
-    end_date = f'{date}T{hour}:59'
+
+    start_date = datetime.datetime.now().strftime('%Y-%m-%dT%H:00')
+    end_date = (datetime.datetime.now() + datetime.timedelta(hours=1)).strftime('%Y-%m-%dT%H:00')
     params = {'start_date': start_date, 'end_date': end_date, 'time_trunc': 'hour'}
 
     try:
@@ -106,7 +106,8 @@ else:
     b1.warning("Temperature data not available")
 
 # Continue with existing metrics
-b2.metric("Electricity Price", f"{round(min(0.10, 0.50), 2)} - {round(max(0.10, 0.50), 2)} €/kWh", "-")
+current_electricity_price = get_current_electricity_price()
+b2.metric("Electricity Price", f"{round(current_electricity_price, 2)} €/kWh", "-")
 b3.metric("LED Status", "-", "-")
 b4.metric("LED Status", "-", "-")
 
@@ -121,24 +122,11 @@ with c1:
         st.warning("Temperature data not available")
 
 # Row D
-# Fetch electricity prices for the previous day
-yesterday = datetime.datetime.now() - datetime.timedelta(days=1)
-previous_day = yesterday.strftime('%Y-%m-%d')
-hours_of_day = range(24)
-prices = []
-
-for hour in hours_of_day:
-    price = get_electricity_price_for_date(previous_day, hour)
-    print(f"The electricity price for {previous_day} {hour} is {price} €/kWh at {hour}:00.")
-    
-    # Append the price to the array
-    prices.append(price)
-
 d1, d2, d3 = st.columns((5, 5, 2))
 with d1:
     st.markdown('### Electricity Price Trend')
-    plt.plot(hours_of_day, prices, marker='o')
-    plt.title(f'Electricity Prices on {previous_day}')
+    plt.plot([datetime.datetime.now().hour], [current_electricity_price], marker='o')
+    plt.title(f'Current Electricity Price')
     plt.xlabel('Hour of the Day')
     plt.ylabel('Electricity Price (€/kWh)')
     st.pyplot(plt)
@@ -148,7 +136,7 @@ with d2:
     # Replace this with any statistics or summary you want to display
     if temperatures:
         st.text(f"Average Temperature: {round(np.mean(temperatures), 2)} °C")
-        st.text(f"Average Electricity Price: {round(np.mean(prices), 2)} €/kWh")
+        st.text(f"Current Electricity Price: {round(current_electricity_price, 2)} €/kWh")
     else:
         st.warning("Statistics not available")
 
