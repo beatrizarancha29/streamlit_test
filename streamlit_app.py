@@ -2,9 +2,9 @@ import streamlit as st
 from PIL import Image
 import pandas as pd
 import requests
-import numpy as np
 import datetime
 import matplotlib.pyplot as plt
+from matplotlib.dates import date2num
 
 # Function to get weather data from the external API
 def get_weather_data(city, days=7):
@@ -105,8 +105,18 @@ if real_time_prices:
     # Plot the real-time electricity prices for the day
     df_prices = pd.DataFrame({'Time': real_time_times, 'Price': real_time_prices})
 
+    # Ensure the 'Time' column is in a format that can be parsed to datetime
+    try:
+        df_prices['Time'] = pd.to_datetime(df_prices['Time'])
+    except pd.errors.OutOfBoundsDatetime:
+        st.error("Error: Out of bounds nanosecond timestamp in 'Time' column.")
+        st.stop()
+
+    # Convert 'Time' to numerical values
+    df_prices['Time'] = date2num(df_prices['Time'])
+
     fig, ax = plt.subplots()
-    ax.plot(df_prices['Time'], df_prices['Price'], label='Real-time Prices', marker='o')
+    ax.plot_date(df_prices['Time'], df_prices['Price'], fmt='o', label='Real-time Prices')
     ax.set_xlabel('Time')
     ax.set_ylabel('Electricity Price ($/kWh)')
     ax.set_title('Real-time Electricity Price Variation for the Day')
@@ -133,10 +143,19 @@ with c2:
     if real_time_prices:
         # Plot the real-time electricity prices for the day
         df_prices = pd.DataFrame({'Time': real_time_times, 'Price': real_time_prices})
-        df_prices['Time'] = pd.to_datetime(df_prices['Time'])
+
+        # Ensure the 'Time' column is in a format that can be parsed to datetime
+        try:
+            df_prices['Time'] = pd.to_datetime(df_prices['Time'])
+        except pd.errors.OutOfBoundsDatetime:
+            st.error("Error: Out of bounds nanosecond timestamp in 'Time' column.")
+            st.stop()
+
+        # Convert 'Time' to numerical values
+        df_prices['Time'] = date2num(df_prices['Time'])
 
         fig, ax = plt.subplots()
-        ax.plot(df_prices['Time'], df_prices['Price'], label='Real-time Prices', marker='o')
+        ax.plot_date(df_prices['Time'], df_prices['Price'], fmt='o', label='Real-time Prices')
         ax.set_xlabel('Time')
         ax.set_ylabel('Electricity Price ($/kWh)')
         ax.set_title('Real-time Electricity Price Variation for the Day')
