@@ -6,6 +6,18 @@ import numpy as np
 import datetime
 import matplotlib.pyplot as plt
 
+# Function to get weather data from the external API
+def get_weather_data(city):
+    api_key = '46b2788544324cc8ada143152230512'  # Replace with your actual weather API key
+    response = requests.get(f'https://api.weatherapi.com/v1/forecast.json?key={api_key}&q={city}&days=30')
+    
+    try:
+        response.raise_for_status()  # Raises an HTTPError for bad responses (4xx or 5xx)
+        return response.json()['forecast']['forecastday']
+    except requests.exceptions.RequestException as e:
+        st.error(f"Error getting weather data: {e}")
+        return []
+
 # Function to get real-time electricity prices from the external API with 5-minute increments
 def get_electricity_prices():
     endpoint = 'https://apidatos.ree.es'
