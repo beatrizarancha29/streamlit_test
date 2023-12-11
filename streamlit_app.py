@@ -20,17 +20,9 @@ def get_weather_data(city, days=7):
         return []
 
 # Function to get real-time electricity prices from the external API with hourly increments
-def get_electricity_prices():
-    endpoint = 'https://apidatos.ree.es'
-    get_archives = '/es/datos/mercados/precios-mercados-tiempo-real'
-    headers = {'Accept': 'application/json',
-               'Content-Type': 'application/json',
-               'Host': 'apidatos.ree.es'}
-
-    now = datetime.datetime.now()
-    start_date = now.strftime('%Y-%m-%dT%H:%M')
-    end_date = (now + datetime.timedelta(days=1)).strftime('%Y-%m-%dT%H:%M')  # 24 hours from now
-
+def get_electricity_price_for_date(date, hour):
+    start_date = f'{date}T{hour}:00'
+    end_date = f'{date}T{hour}:59'
     params = {'start_date': start_date, 'end_date': end_date, 'time_trunc': 'hour'}
 
     try:
@@ -38,13 +30,44 @@ def get_electricity_prices():
         response.raise_for_status()  # Raises an HTTPError for bad responses (4xx or 5xx)
         data = response.json()
 
+        # Check if 'included' key is present in the response
         if 'included' in data:
-            prices = [item['attributes']['values'][0]['value'] for item in data['included']]
-            times = [item['attributes']['values'][0]['datetime'] for item in data['included']]
-            return prices, times
+            # Find the 'values' field under 'attributes'
+            for item in data['included']:
+                if 'values' in item['attributes']:
+                    # Assuming the API response contains a 'values' field with a 'value' for the electricity price
+                    price = item['attributes']['values'][0]['value']
+                    return price
+
+            print(f"Error: 'values' key not found in 'attributes'. Response: {data}")
+            return None
         else:
-            st.warning("Electricity price data not available")
-            return [], []
+            print(f"Error: 'included' key not found in response. Response: {data}")
+            return None
+    except requests.exceptions.RequestException as e:
+        print(f"Error making API request: {e}")
+        return None
+
+# Find the electricity prices for yesterday and store them in an array
+yesterday = datetime.datetime.now() - datetime.timedelta(days=1)
+previous_day = yesterday.strftime('%Y-%m-%d')
+hours_of_day = range(24)
+prices = []
+
+for hour in hours_of_day:
+    price = get_electricity_price_for_date(previous_day, hour)
+    print(f"The electricity price for {previous_day} {hour} is {price} €/MWh at {hour}:00.")
+    
+    # Append the price to the array
+    prices.append(price)
+
+# Plotting the prices against time
+hours_range = [f'{hour}:00' for hour in hours_of_day]
+plt.plot(hours_range, prices, marker='o')
+plt.title(f'Electricity Prices on {previous_day}')
+plt.xlabel('Hour of the Day')
+plt.ylabel('Electricity Price (€/MWh)')
+plt.show()
 
     except requests.exceptions.RequestException as e:
         st.error(f"Error making API request: {e}")
