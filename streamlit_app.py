@@ -3,12 +3,39 @@ from PIL import Image
 import pandas as pd
 import requests
 import numpy as np
+import datetime
+import matplotlib.pyplot as plt
 
-# Function to get weather data from the external API
-def get_weather_data(city):
-    api_key = '46b2788544324cc8ada143152230512'  # Replace with your actual weather API key
-    response = requests.get(f'https://api.weatherapi.com/v1/forecast.json?key={api_key}&q={city}&days=30')
-    return response.json()['forecast']['forecastday']
+# Function to get real-time electricity prices from the external API
+def get_electricity_prices():
+    endpoint = 'https://apidatos.ree.es'
+    get_archives = '/es/datos/mercados/precios-mercados-tiempo-real'
+    headers = {'Accept': 'application/json',
+               'Content-Type': 'application/json',
+               'Host': 'apidatos.ree.es'}
+
+    now = datetime.datetime.now()
+    start_date = now.strftime('%Y-%m-%dT%H:%M')
+    end_date = (now + datetime.timedelta(hours=24)).strftime('%Y-%m-%dT%H:%M')
+
+    params = {'start_date': start_date, 'end_date': end_date, 'time_trunc': 'hour'}
+
+    try:
+        response = requests.get(endpoint + get_archives, headers=headers, params=params)
+        response.raise_for_status()  # Raises an HTTPError for bad responses (4xx or 5xx)
+        data = response.json()
+
+        if 'included' in data:
+            prices = [item['attributes']['values'][0]['value'] for item in data['included']]
+            times = [item['attributes']['values'][0]['datetime'] for item in data['included']]
+            return prices, times
+        else:
+            st.warning("Electricity price data not available")
+            return [], []
+
+    except requests.exceptions.RequestException as e:
+        st.error(f"Error making API request: {e}")
+        return [], []
 
 # Page setting
 st.set_page_config(layout="wide")
@@ -27,7 +54,7 @@ a3.metric("Humidity", "-", "-")  # Replace with actual data or remove if not nee
 b1, b2, b3, b4 = st.columns(4)
 
 # Fetch weather data for the entire month
-city_name = "New York"  # You can make it dynamic based on user input
+city_name = "Barcelona"  # You can make it dynamic based on user input
 weather_data = get_weather_data(city_name)
 
 # Extract temperature and date data from the API response
@@ -50,14 +77,26 @@ c1, c2 = st.columns((7, 3))
 with c1:
     st.markdown('### Temperature Trend')
     if temperatures:
-        # Use an appropriate graph for temperature, e.g., line chart or area chart
         st.line_chart(pd.DataFrame({'Temperature': temperatures}, index=dates))
     else:
         st.warning("Temperature data not available")
 with c2:
     st.markdown('### Electricity Price Trend')
-    # Replace this with your actual line chart or visualization for electricity prices
-    st.line_chart([round(np.random.uniform(0.10, 0.50), 2) for _ in range(30)])
+    
+    # Get real-time electricity prices
+    real_time_prices, real_time_times = get_electricity_prices()
+
+    if real_time_prices:
+        # Plot the real-time electricity prices
+        plt.plot(real_time_times, real_time_prices, label='Real-time Prices', marker='o')
+        plt.xlabel('Time')
+        plt.ylabel('Electricity Price ($/kWh)')
+        plt.title('Real-time Electricity Price Variation')
+        plt.xticks(rotation=45)
+        plt.legend()
+        st.pyplot(plt)
+    else:
+        st.warning("Real-time electricity price data not available")
 
 # Row D
 d1, d2 = st.columns((7, 3))
@@ -66,7 +105,7 @@ with d1:
     # Replace this with any statistics or summary you want to display
     if temperatures:
         st.text(f"Average Temperature: {round(np.mean(temperatures), 2)} °C")
-        st.text(f"Average Electricity Price: {round(np.mean([np.random.uniform(0.10, 0.50) for _ in range(30)]), 2)} $/kWh")
+        st.text(f"Average Electricity Price: {round(np.mean(real_time_prices), 2)} $/kWh")
     else:
         st.warning("Statistics not available")
 with d2:
