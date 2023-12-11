@@ -19,7 +19,7 @@ with open('style.css') as f:
 # Here starts the web app design
 # Row A
 a1, a2, a3 = st.columns(3)
-a1.image(Image.open('streamlit-logo-secondary-colormark-darktext.png'))
+a1.image(Image.open('autoprice.png'))
 a2.metric("Wind", "-", "-")  # Replace with actual data or remove if not needed
 a3.metric("Humidity", "-", "-")  # Replace with actual data or remove if not needed
 
