@@ -105,13 +105,17 @@ if real_time_prices:
 
     # Plot the real-time electricity prices for the day
     df_prices = pd.DataFrame({'Time': real_time_times, 'Price': real_time_prices})
-    
-    # Ensure the x-axis shows time in the format "0000 0100" up to "2400"
-    df_prices['Time'] = pd.to_datetime(df_prices['Time']).dt.strftime('%H%M')
-    
-    # Convert 'Time' to datetime and then to numerical values
-    df_prices['Time'] = date2num(pd.to_datetime(df_prices['Time']))
-    
+
+    # Ensure the 'Time' column is in a format that can be parsed to datetime
+    try:
+        df_prices['Time'] = pd.to_datetime(df_prices['Time'])
+    except pd.errors.OutOfBoundsDatetime:
+        st.error("Error: Out of bounds nanosecond timestamp in 'Time' column.")
+        st.stop()
+
+    # Convert 'Time' to numerical values
+    df_prices['Time'] = date2num(df_prices['Time'])
+
     fig, ax = plt.subplots()
     ax.plot_date(df_prices['Time'], df_prices['Price'], label='Real-time Prices', marker='o')
     ax.set_xlabel('Time')
