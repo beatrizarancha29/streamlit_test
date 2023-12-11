@@ -2,8 +2,21 @@ import streamlit as st
 from PIL import Image
 import pandas as pd
 import requests
+import numpy as np
 import datetime
 import matplotlib.pyplot as plt
+
+# Function to get weather data from the external API
+def get_weather_data(city):
+    api_key = '46b2788544324cc8ada143152230512'  # Replace with your actual weather API key
+    response = requests.get(f'https://api.weatherapi.com/v1/forecast.json?key={api_key}&q={city}&days=30')
+    
+    try:
+        response.raise_for_status()  # Raises an HTTPError for bad responses (4xx or 5xx)
+        return response.json()['forecast']['forecastday']
+    except requests.exceptions.RequestException as e:
+        st.error(f"Error getting weather data: {e}")
+        return []
 
 # Function to get real-time electricity prices from the external API with hourly increments
 def get_electricity_prices():
@@ -15,7 +28,7 @@ def get_electricity_prices():
 
     now = datetime.datetime.now()
     start_date = now.strftime('%Y-%m-%dT%H:%M')
-    end_date = (now + datetime.timedelta(hours=24)).strftime('%Y-%m-%dT%H:%M')  # 24 hours from now
+    end_date = (now + datetime.timedelta(days=1)).strftime('%Y-%m-%dT%H:%M')  # 24 hours from now
 
     params = {'start_date': start_date, 'end_date': end_date, 'time_trunc': 'hour'}
 
