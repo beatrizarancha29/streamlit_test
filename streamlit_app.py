@@ -98,11 +98,24 @@ else:
     b2.warning("Temperature data not available for the day")
 
 # Continue with existing metrics
-real_time_prices, _ = get_electricity_prices()
+real_time_prices, real_time_times = get_electricity_prices()
 if real_time_prices:
-    b3.metric("Electricity Price", f"{round(min(real_time_prices), 2)} - {round(max(real_time_prices), 2)} $/kWh", "-")
+    b3.metric("Electricity Price", f"{round(min(real_time_prices), 2)} - {round(max(real_time_prices), 2)} $/kWh", "")
+
+    # Plot the real-time electricity prices for the day
+    df_prices = pd.DataFrame({'Time': real_time_times, 'Price': real_time_prices})
+    df_prices['Time'] = pd.to_datetime(df_prices['Time'])
+    
+    fig, ax = plt.subplots()
+    ax.plot(df_prices['Time'], df_prices['Price'], label='Real-time Prices', marker='o')
+    ax.set_xlabel('Time')
+    ax.set_ylabel('Electricity Price ($/kWh)')
+    ax.set_title('Real-time Electricity Price Variation for the Day')
+    ax.tick_params(rotation=45)
+    ax.legend()
+    st.pyplot(fig)
 else:
-    b3.warning("Electricity price data not available for the day")
+    b3.warning("Real-time electricity price data not available for the day")
 
 # ... (Remaining code)
 
