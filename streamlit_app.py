@@ -54,7 +54,7 @@ a3.metric("Humidity", "-", "-")  # Replace with actual data or remove if not nee
 b1, b2, b3, b4 = st.columns(4)
 
 # Fetch weather data for the entire month
-city_name = "Barcelona"  # You can make it dynamic based on user input
+city_name = "New York"  # You can make it dynamic based on user input
 weather_data = get_weather_data(city_name)
 
 # Extract temperature and date data from the API response
