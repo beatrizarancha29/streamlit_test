@@ -108,9 +108,10 @@ if real_time_prices:
     
     # Ensure the x-axis shows time in the format "0000 0100" up to "2400"
     df_prices['Time'] = df_prices['Time'].dt.strftime('%H%M')
+    df_prices = df_prices.set_index('Time')  # Set 'Time' as the index
     
     fig, ax = plt.subplots()
-    ax.plot(df_prices['Time'], df_prices['Price'], label='Real-time Prices', marker='o')
+    ax.plot(df_prices.index, df_prices['Price'], label='Real-time Prices', marker='o')
     ax.set_xlabel('Time')
     ax.set_ylabel('Electricity Price ($/kWh)')
     ax.set_title('Real-time Electricity Price Variation for the Day')
