@@ -2,21 +2,8 @@ import streamlit as st
 from PIL import Image
 import pandas as pd
 import requests
-import numpy as np
 import datetime
 import matplotlib.pyplot as plt
-
-# Function to get weather data from the external API
-def get_weather_data(city):
-    api_key = '46b2788544324cc8ada143152230512'  # Replace with your actual weather API key
-    response = requests.get(f'https://api.weatherapi.com/v1/forecast.json?key={api_key}&q={city}&days=30')
-    
-    try:
-        response.raise_for_status()  # Raises an HTTPError for bad responses (4xx or 5xx)
-        return response.json()['forecast']['forecastday']
-    except requests.exceptions.RequestException as e:
-        st.error(f"Error getting weather data: {e}")
-        return []
 
 # Function to get real-time electricity prices from the external API with hourly increments
 def get_electricity_prices():
@@ -28,7 +15,7 @@ def get_electricity_prices():
 
     now = datetime.datetime.now()
     start_date = now.strftime('%Y-%m-%dT%H:%M')
-    end_date = (now + datetime.timedelta(days=1)).strftime('%Y-%m-%dT%H:%M')  # 24 hours from now
+    end_date = (now + datetime.timedelta(hours=24)).strftime('%Y-%m-%dT%H:%M')  # 24 hours from now
 
     params = {'start_date': start_date, 'end_date': end_date, 'time_trunc': 'hour'}
 
@@ -100,13 +87,17 @@ with c2:
 
     if real_time_prices:
         # Plot the real-time electricity prices
-        plt.plot(real_time_times, real_time_prices, label='Real-time Prices', marker='o')
-        plt.xlabel('Time')
-        plt.ylabel('Electricity Price ($/kWh)')
-        plt.title('Real-time Electricity Price Variation')
-        plt.xticks(rotation=45)
-        plt.legend()
-        st.pyplot(plt)
+        df_prices = pd.DataFrame({'Time': real_time_times, 'Price': real_time_prices})
+        df_prices['Time'] = pd.to_datetime(df_prices['Time'])
+        
+        fig, ax = plt.subplots()
+        ax.plot(df_prices['Time'], df_prices['Price'], label='Real-time Prices', marker='o')
+        ax.set_xlabel('Time')
+        ax.set_ylabel('Electricity Price ($/kWh)')
+        ax.set_title('Real-time Electricity Price Variation')
+        ax.tick_params(rotation=45)
+        ax.legend()
+        st.pyplot(fig)
     else:
         st.warning("Real-time electricity price data not available")
 
