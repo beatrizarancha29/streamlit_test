@@ -94,10 +94,6 @@ with c1:
         st.line_chart(pd.DataFrame({'Temperature': temperatures}, index=dates))
     else:
         st.warning("Temperature data not available")
-with c2:
-    st.markdown('### Electricity Price Trend')
-    # Replace this with your actual line chart or visualization for electricity prices
-    st.line_chart([round(np.random.uniform(0.10, 0.50), 2) for _ in range(30)])
 
 # Row D
 # Fetch electricity prices for the previous day
