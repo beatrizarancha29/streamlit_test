@@ -5,6 +5,7 @@ import requests
 import numpy as np
 import datetime
 import matplotlib.pyplot as plt
+from matplotlib.dates import date2num
 
 # Function to get weather data from the external API
 def get_weather_data(city, days=7):
@@ -108,8 +109,11 @@ if real_time_prices:
     # Ensure the x-axis shows time in the format "0000 0100" up to "2400"
     df_prices['Time'] = pd.to_datetime(df_prices['Time']).dt.strftime('%H%M')
     
+    # Convert 'Time' to datetime and then to numerical values
+    df_prices['Time'] = date2num(pd.to_datetime(df_prices['Time']))
+    
     fig, ax = plt.subplots()
-    ax.plot(df_prices['Time'], df_prices['Price'], label='Real-time Prices', marker='o')
+    ax.plot_date(df_prices['Time'], df_prices['Price'], label='Real-time Prices', marker='o')
     ax.set_xlabel('Time')
     ax.set_ylabel('Electricity Price ($/kWh)')
     ax.set_title('Real-time Electricity Price Variation for the Day')
@@ -119,7 +123,35 @@ if real_time_prices:
 else:
     b3.warning("Real-time electricity price data not available for the day")
 
-# ... (Remaining code)
+# Row C
+c1, c2 = st.columns((7, 3))
+with c1:
+    st.markdown('### Temperature Trend for the Day')
+    if temperatures_day:
+        st.line_chart(pd.DataFrame({'Temperature': temperatures_day}, index=hours_day))
+    else:
+        st.warning("Temperature data not available for the day")
+with c2:
+    st.markdown('### Electricity Price Trend for the Day')
+
+    # Get real-time electricity prices
+    real_time_prices, real_time_times = get_electricity_prices()
+
+    if real_time_prices:
+        # Plot the real-time electricity prices for the day
+        df_prices = pd.DataFrame({'Time': real_time_times, 'Price': real_time_prices})
+        df_prices['Time'] = pd.to_datetime(df_prices['Time'])
+        
+        fig, ax = plt.subplots()
+        ax.plot_date(df_prices['Time'], df_prices['Price'], label='Real-time Prices', marker='o')
+        ax.set_xlabel('Time')
+        ax.set_ylabel('Electricity Price ($/kWh)')
+        ax.set_title('Real-time Electricity Price Variation for the Day')
+        ax.tick_params(rotation=45)
+        ax.legend()
+        st.pyplot(fig)
+    else:
+        st.warning("Real-time electricity price data not available for the day")
 
 # Row D
 d1, d2 = st.columns((7, 3))
