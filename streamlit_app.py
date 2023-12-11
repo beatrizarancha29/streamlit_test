@@ -156,5 +156,5 @@ with d3:
     pass  # Removed the content of the second column (previously combined trend)
 
 # Button to access the Receiver Statistics page
-if st.button("Receiver Statistics"):
-    st.write("This is the Receiver Statistics page. You can add content and charts here.")
+st.button("Receiver Statistics", key="receiver_stats_btn", help="Click to view Receiver Statistics", on_click=None, args=None, kwargs=None, disabled=False, use_container_width=False, **streamlit_container)
+
