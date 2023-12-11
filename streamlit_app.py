@@ -9,11 +9,46 @@ from matplotlib.dates import date2num
 
 # Function to get weather data from the external API
 def get_weather_data(city, days=7):
-    # Function body (unchanged)
+    api_key = '46b2788544324cc8ada143152230512'  # Replace with your actual weather API key
+    response = requests.get(f'https://api.weatherapi.com/v1/forecast.json?key={api_key}&q={city}&days={days}')
+
+    try:
+        response.raise_for_status()  # Raises an HTTPError for bad responses (4xx or 5xx)
+        return response.json()['forecast']['forecastday']
+    except requests.exceptions.RequestException as e:
+        st.error(f"Error getting weather data: {e}")
+        return []
 
 # Function to get real-time electricity prices from the external API with hourly increments
 def get_electricity_prices():
-    # Function body (unchanged)
+    endpoint = 'https://apidatos.ree.es'
+    get_archives = '/es/datos/mercados/precios-mercados-tiempo-real'
+    headers = {'Accept': 'application/json',
+               'Content-Type': 'application/json',
+               'Host': 'apidatos.ree.es'}
+
+    now = datetime.datetime.now()
+    start_date = now.strftime('%Y-%m-%dT%H:%M')
+    end_date = (now + datetime.timedelta(days=1)).strftime('%Y-%m-%dT%H:%M')  # 24 hours from now
+
+    params = {'start_date': start_date, 'end_date': end_date, 'time_trunc': 'hour'}
+
+    try:
+        response = requests.get(endpoint + get_archives, headers=headers, params=params)
+        response.raise_for_status()  # Raises an HTTPError for bad responses (4xx or 5xx)
+        data = response.json()
+
+        if 'included' in data:
+            prices = [item['attributes']['values'][0]['value'] for item in data['included']]
+            times = [item['attributes']['values'][0]['datetime'] for item in data['included']]
+            return prices, times
+        else:
+            st.warning("Electricity price data not available")
+            return [], []
+
+    except requests.exceptions.RequestException as e:
+        st.error(f"Error making API request: {e}")
+        return [], []
 
 # Page setting
 st.set_page_config(layout="wide")
@@ -131,13 +166,7 @@ with c2:
         df_prices['Time'] = date2num(df_prices['Time'])
 
         fig, ax = plt.subplots()
-        ax.plot_date(df_prices['Time'], df_prices['Price'], fmt='o', label='Real-time Prices', color='blue')
-        
-        # Highlight the hour closest to the current time in red
-        nearest_hour_index = np.argmin(np.abs(np.array([t.hour for t in df_prices['Time']]) - current_hour))
-        ax.plot_date(df_prices['Time'][nearest_hour_index], df_prices['Price'][nearest_hour_index],
-                     fmt='o', color='red', markersize=10, label=f'Current Hour: {current_hour}:00')
-
+        ax.plot_date(df_prices['Time'], df_prices['Price'], fmt='o', label='Real-time Prices')
         ax.set_xlabel('Time')
         ax.set_ylabel('Electricity Price ($/kWh)')
         ax.set_title('Real-time Electricity Price Variation for the Day')
@@ -147,7 +176,7 @@ with c2:
     else:
         st.warning("Real-time electricity price data not available for the day")
 
-# Row D (unchanged)
+# Row D
 d1, d2 = st.columns((7, 3))
 with d1:
     st.markdown('### Statistics')
@@ -159,4 +188,3 @@ with d1:
         st.warning("Statistics not available for the week")
 with d2:
     pass  # Removed the content of the second column (previously combined trend)
-
