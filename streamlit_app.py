@@ -154,3 +154,7 @@ with d2:
 
 with d3:
     pass  # Removed the content of the second column (previously combined trend)
+
+# Button to access the Receiver Statistics page
+if st.button("Receiver Statistics"):
+    st.write("This is the Receiver Statistics page. You can add content and charts here.")
