@@ -50,6 +50,16 @@ def get_electricity_price_for_date(date, hour):
         print(f"Error making API request: {e}")
         return None
 
+# Function to get data from the provided link
+def get_sensor_data():
+    data_url = 'https://raw.githubusercontent.com/AbdullahUPC/ControlProject/main/hello.txt'
+    response = requests.get(data_url)
+    if response.status_code == 200:
+        return response.text
+    else:
+        print(f"Error fetching sensor data. Status Code: {response.status_code}")
+        return None
+
 # Page setting
 st.set_page_config(layout="wide")
 
@@ -60,8 +70,21 @@ with open('style.css') as f:
 # Row A
 a1, a2, a3 = st.columns(3)
 a1.image(Image.open('autoprice.png'))
-a2.metric("Wind", "-", "-")  # Replace with actual data or remove if not needed
-a3.metric("Humidity", "-", "-")  # Replace with actual data or remove if not needed
+
+# Display Temperature Sensor 1, Temperature Sensor 2, and LED Status
+sensor_data = get_sensor_data()
+if sensor_data:
+    lines = sensor_data.splitlines()
+    for line in lines:
+        if "Temperature 1" in line:
+            temp_sensor1 = line.split(':')[1].strip()
+            a2.metric("Temperature Sensor 1", temp_sensor1, "-")
+        elif "Temperature 2" in line:
+            temp_sensor2 = line.split(':')[1].strip()
+            a3.metric("Temperature Sensor 2", temp_sensor2, "-")
+        elif "LED Status" in line:
+            led_status = line.split(':')[1].strip()
+            a2.metric("LED Status", led_status, "-")
 
 # Row B
 b1, b2, b3, b4 = st.columns(4)
