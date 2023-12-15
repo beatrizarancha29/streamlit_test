@@ -99,8 +99,7 @@ electricity_price_chart_placeholder = st.empty()
 
 # Loop for dynamic updating
 while True:
-    time.sleep(300)  # Sleep for 5 minutes
-
+   
     # Fetch and display sensor data
     sensor_data = get_sensor_data()
     if sensor_data:
