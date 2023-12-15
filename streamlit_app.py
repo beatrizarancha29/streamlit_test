@@ -52,7 +52,6 @@ def get_electricity_price_for_date(date, hour):
         print(f"Error making API request: {e}")
         return None
 
-
 def get_sensor_data():
     data_url = 'https://raw.githubusercontent.com/AbdullahUPC/ControlProject/main/hello.txt'
     response = requests.get(data_url)
@@ -73,20 +72,28 @@ with open('style.css') as f:
 a1, a2, a3 = st.columns(3)
 a1.image(Image.open('autoprice.png'))
 
-# Display Temperature Sensor 1, Temperature Sensor 2, and LED Status
-sensor_data = get_sensor_data()
-if sensor_data:
-    lines = sensor_data.split(', ')
-    for line in lines:
-        if "Temperature 1" in line:
-            temp_sensor1 = line.split(': ')[1].replace('°K', '°C')
-            a2.metric("Temperature Sensor 1", temp_sensor1, "-")
-        elif "Temperature 2" in line:
-            temp_sensor2 = line.split(': ')[1].replace('°K', '°C')
-            a3.metric("Temperature Sensor 2", temp_sensor2, "-")
-        elif "LED Status" in line:
-            led_status = line.split(': ')[1]
-            a2.metric("LED Status", led_status, "-")
+# Counter initialization
+count = 0
+
+# Check the counter value to determine which section to display
+if count == 1:
+    # Display Temperature Sensor 1, Temperature Sensor 2, and LED Status
+    sensor_data = get_sensor_data()
+    if sensor_data:
+        lines = sensor_data.split(', ')
+        for line in lines:
+            if "Temperature 1" in line:
+                temp_sensor1 = line.split(': ')[1].replace('°K', '°C')
+                a2.metric("Temperature Sensor 1", temp_sensor1, "-")
+            elif "Temperature 2" in line:
+                temp_sensor2 = line.split(': ')[1].replace('°K', '°C')
+                a3.metric("Temperature Sensor 2", temp_sensor2, "-")
+            elif "LED Status" in line:
+                led_status = line.split(': ')[1]
+                a2.metric("LED Status", led_status, "-")
+    count = 0
+else:
+    count = 1
 
 # Row B
 b1, b2, b3, b4 = st.columns(4)
