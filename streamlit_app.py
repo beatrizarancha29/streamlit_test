@@ -56,9 +56,11 @@ def get_sensor_data():
     data_url = 'https://raw.githubusercontent.com/AbdullahUPC/ControlProject/main/hello.txt'
     response = requests.get(data_url)
     if response.status_code == 200:
+         count=1;
         return response.text
     else:
         print(f"Error fetching sensor data. Status Code: {response.status_code}")
+         count=0;
         return None
 
 # Page setting
@@ -73,9 +75,6 @@ a1, a2, a3 = st.columns(3)
 a1.image(Image.open('autoprice.png'))
 
 # Counter initialization
-
-
-# Check the counter value to determine which section to display
 if count == 1:
     # Display Temperature Sensor 1, Temperature Sensor 2, and LED Status
     sensor_data = get_sensor_data()
@@ -93,6 +92,7 @@ if count == 1:
                 a2.metric("LED Status", led_status, "-")
     count = 0
 else:
+    
     count = 1
 
 # Row B
