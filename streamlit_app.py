@@ -1,4 +1,5 @@
 import streamlit as st
+import time
 from PIL import Image
 import pandas as pd
 import requests
@@ -23,7 +24,7 @@ def get_electricity_price_for_date(date, hour):
         'Content-Type': 'application/json',
         'Host': 'apidatos.ree.es'
     }
-    
+
     start_date = f'{date}T{hour}:00'
     end_date = f'{date}T{hour}:59'
     params = {'start_date': start_date, 'end_date': end_date, 'time_trunc': 'hour'}
@@ -54,6 +55,7 @@ def get_electricity_price_for_date(date, hour):
         return None
 
 # Function to get data from the provided link
+@st.cache(ttl=300)  # Cache for 5 minutes
 def get_sensor_data():
     data_url = 'https://raw.githubusercontent.com/AbdullahUPC/ControlProject/main/hello.txt'
     response = requests.get(data_url)
@@ -75,19 +77,19 @@ a1, a2, a3 = st.columns(3)
 a1.image(Image.open('autoprice.png'))
 
 # Display Temperature Sensor 1, Temperature Sensor 2, and LED Status
-sensor_data = get_sensor_data()
-if sensor_data:
-    lines = sensor_data.split(', ')
-    for line in lines:
-        if "Temperature 1" in line:
-            temp_sensor1 = line.split(': ')[1].replace('°K', '°C')
-            a2.metric("Temperature Sensor 1", temp_sensor1, "-")
-        elif "Temperature 2" in line:
-            temp_sensor2 = line.split(': ')[1].replace('°K', '°C')
-            a3.metric("Temperature Sensor 2", temp_sensor2, "-")
-        elif "LED Status" in line:
-            led_status = line.split(': ')[1]
-            a2.metric("LED Status", led_status, "-")
+def display_sensor_data(sensor_data):
+    if sensor_data:
+        lines = sensor_data.split(', ')
+        for line in lines:
+            if "Temperature 1" in line:
+                temp_sensor1 = line.split(': ')[1].replace('°K', '°C')
+                a2.metric("Temperature Sensor 1", temp_sensor1, "-")
+            elif "Temperature 2" in line:
+                temp_sensor2 = line.split(': ')[1].replace('°K', '°C')
+                a3.metric("Temperature Sensor 2", temp_sensor2, "-")
+            elif "LED Status" in line:
+                led_status = line.split(': ')[1]
+                a2.metric("LED Status", led_status, "-")
 
 # Row B
 b1, b2, b3, b4 = st.columns(4)
@@ -165,3 +167,10 @@ with d3:
 # Button to access the Receiver Statistics page
 if st.button("Receiver Statistics"):
     webbrowser.open_new_tab("http://www.xyz.com")
+
+# Add a timer to periodically refresh the data
+while True:
+    time.sleep(300)  # Sleep for 5 minutes
+    st.caching.clear_cache()  # Clear the cache to fetch new data
+    sensor_data = get_sensor_data()
+    display_sensor_data(sensor_data)
