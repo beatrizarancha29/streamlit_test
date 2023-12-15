@@ -1,5 +1,3 @@
-User
-i want the following code to call the price api only when I press I button to call it
 import streamlit as st
 from PIL import Image
 import pandas as pd
