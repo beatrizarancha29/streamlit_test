@@ -1,3 +1,5 @@
+User
+i want the following code to call the price api only when I press I button to call it
 import streamlit as st
 from PIL import Image
 import pandas as pd
@@ -6,16 +8,13 @@ import numpy as np
 import datetime
 import matplotlib.pyplot as plt
 import webbrowser
-
 # Function to get weather data from the external API
-@st.cache
 def get_weather_data(city):
     api_key = '46b2788544324cc8ada143152230512'  # Replace with your actual weather API key
     response = requests.get(f'https://api.weatherapi.com/v1/forecast.json?key={api_key}&q={city}&days=30')
     return response.json()['forecast']['forecastday']
 
 # Function to get the electricity prices for a specific day and hour
-@st.cache
 def get_electricity_price_for_date(date, hour):
     # Actual values for endpoint, get_archives, and headers
     endpoint = 'https://apidatos.ree.es'
@@ -56,7 +55,6 @@ def get_electricity_price_for_date(date, hour):
         return None
 
 # Function to get data from the provided link
-@st.cache
 def get_sensor_data():
     data_url = 'https://raw.githubusercontent.com/AbdullahUPC/ControlProject/main/hello.txt'
     response = requests.get(data_url)
@@ -131,35 +129,29 @@ previous_day = yesterday.strftime('%Y-%m-%d')
 hours_of_day = range(24)
 prices = []
 
-# Button to call the price API
-fetch_button_pressed = st.button("Fetch Electricity Prices")
-if fetch_button_pressed:
-    for hour in hours_of_day:
-        price = get_electricity_price_for_date(previous_day, hour)
-        print(f"The electricity price for {previous_day} {hour} is {price} €/kWh at {hour}:00.")
-        
-        # Append the price to the array
-        prices.append(price)
+for hour in hours_of_day:
+    price = get_electricity_price_for_date(previous_day, hour)
+    print(f"The electricity price for {previous_day} {hour} is {price} €/kWh at {hour}:00.")
+    
+    # Append the price to the array
+    prices.append(price)
 
 d1, d2, d3 = st.columns((5, 5, 2))
 with d1:
     st.markdown('### Electricity Price Trend')
-    if fetch_button_pressed:
-        plt.plot(hours_of_day, prices, marker='o')
-        plt.title(f'Electricity Prices on {previous_day}')
-        plt.xlabel('Hour of the Day')
-        plt.ylabel('Electricity Price (€/kWh)')
-        st.pyplot(plt)
-    else:
-        st.warning("Please press the 'Fetch Electricity Prices' button.")
+    plt.plot(hours_of_day, prices, marker='o')
+    plt.title(f'Electricity Prices on {previous_day}')
+    plt.xlabel('Hour of the Day')
+    plt.ylabel('Electricity Price (€/kWh)')
+    st.pyplot(plt)
 
 with d2:
     st.markdown('### Statistics')
     # Replace this with any statistics or summary you want to display
-    if fetch_button_pressed and temperatures and prices:
+    if temperatures:
         st.text(f"Average Temperature: {round(np.mean(temperatures), 2)} °C")
         st.text(f"Average Electricity Price: {round(np.mean(prices), 2)} €/kWh")
-    elif fetch_button_pressed:
+    else:
         st.warning("Statistics not available")
 
 with d3:
@@ -167,4 +159,5 @@ with d3:
 
 # Button to access the Receiver Statistics page
 if st.button("Receiver Statistics"):
+    
     webbrowser.open_new_tab("http://www.xyz.com")
