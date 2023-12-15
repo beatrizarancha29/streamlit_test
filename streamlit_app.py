@@ -6,6 +6,7 @@ import numpy as np
 import datetime
 import matplotlib.pyplot as plt
 import webbrowser
+import time
 
 # Function to get weather data from the external API
 def get_weather_data(city):
@@ -62,6 +63,29 @@ def get_sensor_data():
     else:
         print(f"Error fetching sensor data. Status Code: {response.status_code}")
         return None
+
+# Function to periodically update the metrics and LED status
+def update_metrics_and_led_status():
+    while True:
+        # Fetch latest sensor data
+        sensor_data = get_sensor_data()
+
+        # Update metrics and LED status if data is available
+        if sensor_data:
+            lines = sensor_data.split(', ')
+            for line in lines:
+                if "Temperature 1" in line:
+                    temp_sensor1 = line.split(': ')[1].replace('°K', '°C')
+                    temperature_sensor1_placeholder.metric("Temperature Sensor 1", temp_sensor1, "-")
+                elif "Temperature 2" in line:
+                    temp_sensor2 = line.split(': ')[1].replace('°K', '°C')
+                    temperature_sensor2_placeholder.metric("Temperature Sensor 2", temp_sensor2, "-")
+                elif "LED Status" in line:
+                    led_status = line.split(': ')[1]
+                    led_status_placeholder.metric("LED Status", led_status, "-")
+
+        # Wait for 5 seconds before the next update
+        time.sleep(5)
 
 # Page setting
 st.set_page_config(layout="wide")
