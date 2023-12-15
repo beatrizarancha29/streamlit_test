@@ -170,7 +170,7 @@ if st.button("Receiver Statistics"):
 
 # Add a timer to periodically refresh the data
 while True:
-    time.sleep(300)  # Sleep for 5 minutes
+    time.sleep(1)  # Sleep 
     st.caching.clear_cache()  # Clear the cache to fetch new data
     sensor_data = get_sensor_data()
     display_sensor_data(sensor_data)
