@@ -52,8 +52,7 @@ def get_electricity_price_for_date(date, hour):
         print(f"Error making API request: {e}")
         return None
 
-# Function to get data from the provided link
-@st.cache(ttl=300)  # Cache for 5 minutes
+
 def get_sensor_data():
     data_url = 'https://raw.githubusercontent.com/AbdullahUPC/ControlProject/main/hello.txt'
     response = requests.get(data_url)
