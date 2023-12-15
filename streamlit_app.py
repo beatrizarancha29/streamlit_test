@@ -73,7 +73,7 @@ a1, a2, a3 = st.columns(3)
 a1.image(Image.open('autoprice.png'))
 
 # Counter initialization
-count = 0
+
 
 # Check the counter value to determine which section to display
 if count == 1:
