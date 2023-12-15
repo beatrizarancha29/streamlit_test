@@ -5,6 +5,7 @@ import requests
 import numpy as np
 import datetime
 import matplotlib.pyplot as plt
+import webbrowser
 
 # Function to get weather data from the external API
 def get_weather_data(city):
@@ -127,29 +128,35 @@ previous_day = yesterday.strftime('%Y-%m-%d')
 hours_of_day = range(24)
 prices = []
 
-for hour in hours_of_day:
-    price = get_electricity_price_for_date(previous_day, hour)
-    print(f"The electricity price for {previous_day} {hour} is {price} €/kWh at {hour}:00.")
-    
-    # Append the price to the array
-    prices.append(price)
+# Button to call the price API
+fetch_button_pressed = st.button("Fetch Electricity Prices")
+if fetch_button_pressed:
+    for hour in hours_of_day:
+        price = get_electricity_price_for_date(previous_day, hour)
+        print(f"The electricity price for {previous_day} {hour} is {price} €/kWh at {hour}:00.")
+        
+        # Append the price to the array
+        prices.append(price)
 
 d1, d2, d3 = st.columns((5, 5, 2))
 with d1:
     st.markdown('### Electricity Price Trend')
-    plt.plot(hours_of_day, prices, marker='o')
-    plt.title(f'Electricity Prices on {previous_day}')
-    plt.xlabel('Hour of the Day')
-    plt.ylabel('Electricity Price (€/kWh)')
-    st.pyplot(plt)
+    if fetch_button_pressed:
+        plt.plot(hours_of_day, prices, marker='o')
+        plt.title(f'Electricity Prices on {previous_day}')
+        plt.xlabel('Hour of the Day')
+        plt.ylabel('Electricity Price (€/kWh)')
+        st.pyplot(plt)
+    else:
+        st.warning("Please press the 'Fetch Electricity Prices' button.")
 
 with d2:
     st.markdown('### Statistics')
     # Replace this with any statistics or summary you want to display
-    if temperatures:
+    if fetch_button_pressed and temperatures and prices:
         st.text(f"Average Temperature: {round(np.mean(temperatures), 2)} °C")
         st.text(f"Average Electricity Price: {round(np.mean(prices), 2)} €/kWh")
-    else:
+    elif fetch_button_pressed:
         st.warning("Statistics not available")
 
 with d3:
@@ -157,5 +164,4 @@ with d3:
 
 # Button to access the Receiver Statistics page
 if st.button("Receiver Statistics"):
-    st.write("This is the Receiver Statistics page. You can add content and charts here.")
-
+    webbrowser.open_new_tab("http://www.xyz.com")
