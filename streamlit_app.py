@@ -6,6 +6,7 @@ import numpy as np
 import datetime
 import matplotlib.pyplot as plt
 import webbrowser
+
 # Function to get weather data from the external API
 def get_weather_data(city):
     api_key = '46b2788544324cc8ada143152230512'  # Replace with your actual weather API key
@@ -127,12 +128,14 @@ previous_day = yesterday.strftime('%Y-%m-%d')
 hours_of_day = range(24)
 prices = []
 
-for hour in hours_of_day:
-    price = get_electricity_price_for_date(previous_day, hour)
-    print(f"The electricity price for {previous_day} {hour} is {price} €/kWh at {hour}:00.")
-    
-    # Append the price to the array
-    prices.append(price)
+# Button to call the price API
+if st.button("Fetch Electricity Prices"):
+    for hour in hours_of_day:
+        price = get_electricity_price_for_date(previous_day, hour)
+        print(f"The electricity price for {previous_day} {hour} is {price} €/kWh at {hour}:00.")
+        
+        # Append the price to the array
+        prices.append(price)
 
 d1, d2, d3 = st.columns((5, 5, 2))
 with d1:
@@ -146,7 +149,7 @@ with d1:
 with d2:
     st.markdown('### Statistics')
     # Replace this with any statistics or summary you want to display
-    if temperatures:
+    if temperatures and prices:
         st.text(f"Average Temperature: {round(np.mean(temperatures), 2)} °C")
         st.text(f"Average Electricity Price: {round(np.mean(prices), 2)} €/kWh")
     else:
@@ -157,5 +160,4 @@ with d3:
 
 # Button to access the Receiver Statistics page
 if st.button("Receiver Statistics"):
-    
     webbrowser.open_new_tab("http://www.xyz.com")
