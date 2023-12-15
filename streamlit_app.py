@@ -65,7 +65,7 @@ def get_sensor_data():
         return None
 
 # Function to periodically update the metrics and LED status
-def update_metrics_and_led_status():
+def update_metrics_and_led_status(temperature_sensor1_placeholder, temperature_sensor2_placeholder, led_status_placeholder):
     while True:
         # Fetch latest sensor data
         sensor_data = get_sensor_data()
@@ -116,75 +116,59 @@ if sensor_data:
 # Row B
 b1, b2, b3, b4 = st.columns(4)
 
-# Fetch weather data for the entire month in Barcelona
-city_name = "Barcelona"  # Dynamically set to Barcelona
-weather_data = get_weather_data(city_name)
+# Create placeholders for metrics and LED status
+temperature_sensor1_placeholder = b2.empty()
+temperature_sensor2_placeholder = b3.empty()
+led_status_placeholder = b2.empty()
 
-# Extract temperature and date data from the API response
-temperatures = [day['day'].get('avgtemp_c') for day in weather_data if 'day' in day and 'avgtemp_c' in day['day']]
-dates = [day['date'] for day in weather_data if 'date' in day]
+# Fetch initial sensor data
+sensor_data = get_sensor_data()
 
-# Update the Temperature metric to display the entire month's forecast
-if temperatures:
-    b1.metric("Temperature", f"Min: {min(temperatures):.2f} °C, Max: {max(temperatures):.2f} °C", "-")
-else:
-    b1.warning("Temperature data not available")
-
-# Continue with existing metrics
-b2.metric("Electricity Price", f"{round(min(0.10, 0.50), 2)} - {round(max(0.10, 0.50), 2)} €/kWh", "-")
-b3.metric("LED Status", "-", "-")
-b4.metric("LED Status", "-", "-")
+# Update metrics and LED status initially
+if sensor_data:
+    lines = sensor_data.split(', ')
+    for line in lines:
+        if "Temperature 1" in line:
+            temp_sensor1 = line.split(': ')[1].replace('°K', '°C')
+            temperature_sensor1_placeholder.metric("Temperature Sensor 1", temp_sensor1, "-")
+        elif "Temperature 2" in line:
+            temp_sensor2 = line.split(': ')[1].replace('°K', '°C')
+            temperature_sensor2_placeholder.metric("Temperature Sensor 2", temp_sensor2, "-")
+        elif "LED Status" in line:
+            led_status = line.split(': ')[1]
+            led_status_placeholder.metric("LED Status", led_status, "-")
 
 # Row C
 c1, c2 = st.columns((7, 3))
 with c1:
     st.markdown('### Temperature Trend')
-    if temperatures:
-        # Use an appropriate graph for temperature, e.g., line chart or area chart
-        st.line_chart(pd.DataFrame({'Temperature': temperatures}, index=dates))
-    else:
-        st.warning("Temperature data not available")
+    # ... (Your existing code)
 
 # Row D
-# Fetch electricity prices for the previous day
-yesterday = datetime.datetime.now() - datetime.timedelta(days=1)
-previous_day = yesterday.strftime('%Y-%m-%d')
-hours_of_day = range(24)
-prices = []
+d1, d2, d3 = st.columns((5, 5, 2))
+with d1:
+    st.markdown('### Electricity Price Trend')
+    # ... (Your existing code)
+
+with d2:
+    st.markdown('### Statistics')
+    # ... (Your existing code)
+
+with d3:
+    pass  # Removed the content of the second column (previously combined trend)
+
+# Start the update thread
+update_thread = st.thread(target=update_metrics_and_led_status, args=(temperature_sensor1_placeholder, temperature_sensor2_placeholder, led_status_placeholder))
 
 # Button to call the price API
 fetch_button_pressed = st.button("Fetch Electricity Prices")
 if fetch_button_pressed:
-    for hour in hours_of_day:
+    for hour in range(24):
         price = get_electricity_price_for_date(previous_day, hour)
         print(f"The electricity price for {previous_day} {hour} is {price} €/kWh at {hour}:00.")
         
         # Append the price to the array
         prices.append(price)
-
-d1, d2, d3 = st.columns((5, 5, 2))
-with d1:
-    st.markdown('### Electricity Price Trend')
-    if fetch_button_pressed:
-        plt.plot(hours_of_day, prices, marker='o')
-        plt.title(f'Electricity Prices on {previous_day}')
-        plt.xlabel('Hour of the Day')
-        plt.ylabel('Electricity Price (€/kWh)')
-        st.pyplot(plt)
-    else:
-        st.warning("Please press the 'Fetch Electricity Prices' button.")
-
-with d2:
-    st.markdown('### Statistics')
-    # Replace this with any statistics or summary you want to display
-    if fetch_button_pressed and temperatures and prices:
-        st.text(f"Average Temperature: {round(np.mean(temperatures), 2)} °C")
-        st.text(f"Average Electricity Price: {round(np.mean(prices), 2)} €/kWh")
-    elif fetch_button_pressed:
-        st.warning("Statistics not available")
-
-with d3:
-    pass  # Removed the content of the second column (previously combined trend)
 
 # Button to access the Receiver Statistics page
 if st.button("Receiver Statistics"):
