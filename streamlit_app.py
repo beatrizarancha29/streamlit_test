@@ -157,5 +157,5 @@ with d3:
 
 # Button to access the Receiver Statistics page
 if st.button("Receiver Statistics"):
-    st.write("Redirecting to Receiver Statistics page...")
+    
     webbrowser.open_new_tab("http://www.xyz.com")
