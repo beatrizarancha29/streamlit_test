@@ -158,6 +158,5 @@ with d3:
 # Button to access the Receiver Statistics page
 if st.button("Receiver Statistics"):
     # Button to access the Receiver Statistics page
-if st.button("Receiver Statistics"):
-    st.markdown('<a href="http://www.xyz.com" target="_blank">Go to Receiver Statistics</a>', unsafe_allow_html=True)
+ st.markdown('<a href="http://www.xyz.com" target="_blank">Go to Receiver Statistics</a>', unsafe_allow_html=True)
 
