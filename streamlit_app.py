@@ -52,9 +52,12 @@ def get_electricity_price_for_date(date, hour):
         print(f"Error making API request: {e}")
         return None
 
+# Function to get sensor data with a timestamp to force cache invalidation
 def get_sensor_data():
-    data_url = 'https://raw.githubusercontent.com/AbdullahUPC/ControlProject/main/hello.txt'
+    timestamp = datetime.datetime.now().timestamp()
+    data_url = f'https://raw.githubusercontent.com/AbdullahUPC/ControlProject/main/hello.txt?timestamp={timestamp}'
     response = requests.get(data_url)
+    
     if response.status_code == 200:
         return response.text
     else:
