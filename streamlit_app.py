@@ -5,7 +5,7 @@ import requests
 import numpy as np
 import datetime
 import matplotlib.pyplot as plt
-
+import webbrowser
 # Function to get weather data from the external API
 def get_weather_data(city):
     api_key = '46b2788544324cc8ada143152230512'  # Replace with your actual weather API key
@@ -157,6 +157,5 @@ with d3:
 
 # Button to access the Receiver Statistics page
 if st.button("Receiver Statistics"):
-    # Button to access the Receiver Statistics page
- st.markdown('<a href="http://www.xyz.com" target="_blank">Go to Receiver Statistics</a>', unsafe_allow_html=True)
-
+    st.write("Redirecting to Receiver Statistics page...")
+    webbrowser.open_new_tab("http://www.xyz.com")
