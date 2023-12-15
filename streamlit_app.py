@@ -129,7 +129,8 @@ hours_of_day = range(24)
 prices = []
 
 # Button to call the price API
-if st.button("Fetch Electricity Prices"):
+fetch_button_pressed = st.button("Fetch Electricity Prices")
+if fetch_button_pressed:
     for hour in hours_of_day:
         price = get_electricity_price_for_date(previous_day, hour)
         print(f"The electricity price for {previous_day} {hour} is {price} €/kWh at {hour}:00.")
@@ -140,19 +141,22 @@ if st.button("Fetch Electricity Prices"):
 d1, d2, d3 = st.columns((5, 5, 2))
 with d1:
     st.markdown('### Electricity Price Trend')
-    plt.plot(hours_of_day, prices, marker='o')
-    plt.title(f'Electricity Prices on {previous_day}')
-    plt.xlabel('Hour of the Day')
-    plt.ylabel('Electricity Price (€/kWh)')
-    st.pyplot(plt)
+    if fetch_button_pressed:
+        plt.plot(hours_of_day, prices, marker='o')
+        plt.title(f'Electricity Prices on {previous_day}')
+        plt.xlabel('Hour of the Day')
+        plt.ylabel('Electricity Price (€/kWh)')
+        st.pyplot(plt)
+    else:
+        st.warning("Please press the 'Fetch Electricity Prices' button.")
 
 with d2:
     st.markdown('### Statistics')
     # Replace this with any statistics or summary you want to display
-    if temperatures and prices:
+    if fetch_button_pressed and temperatures and prices:
         st.text(f"Average Temperature: {round(np.mean(temperatures), 2)} °C")
         st.text(f"Average Electricity Price: {round(np.mean(prices), 2)} €/kWh")
-    else:
+    elif fetch_button_pressed:
         st.warning("Statistics not available")
 
 with d3:
