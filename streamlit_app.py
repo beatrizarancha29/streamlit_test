@@ -70,15 +70,20 @@ st.title( " Smart Home Heating System Dashboard")
 import streamlit as st
 
 # Set the background color to blue
+import streamlit as st
+
+# Set the background color to blue
 st.markdown(
     """
     <style>
         .blue-box {
             background-color: #3498db;
-            padding: 40px;
+            padding: 20px;
             border-radius: 10px;
             color: white;
             text-align: left;
+            font-weight: bold;
+            font-size: 24px;
         }
     </style>
     """,
@@ -87,6 +92,7 @@ st.markdown(
 
 # Create a div with the specified class and display the text "Barcelona"
 st.markdown('<div class="blue-box">Barcelona</div>', unsafe_allow_html=True)
+
 
 # Here starts the web app design
 with open('style.css') as f:
