@@ -66,7 +66,7 @@ def get_sensor_data():
 
 # Page setting
 st.set_page_config(layout="wide")
-
+st.title( " Smart Home Heating System Dashboard")
 # Here starts the web app design
 with open('style.css') as f:
     st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
@@ -100,7 +100,7 @@ else:
     st.session_state.count = 1
 
 # Row B
-b1, b2, b3, b4 = st.columns(4)
+b1, b2 = st.columns(2)
 
 # Fetch weather data for the entire month in Barcelona
 city_name = "Barcelona"  # Dynamically set to Barcelona
@@ -119,19 +119,18 @@ else:
 
 # Continue with existing metrics
 b2.metric("Electricity Price", get_electricity_price_for_date(datetime.datetime.now().strftime('%Y-%m-%d'), datetime.datetime.now().hour), "€/kWh")
-b3.metric("LED Status", "-", "-")
-b4.metric("LED Status", "-", "-")
+
 
 # Row C
 c1, c2 = st.columns((7, 3))
 with c1:
-    st.markdown('### Temperature Trend')
+    st.markdown('### Temperature Trend Barcelona for the next 3 days')
     if temperatures:
         # Use an appropriate graph for temperature, e.g., line chart or area chart
         st.line_chart(pd.DataFrame({'Temperature': temperatures}, index=dates))
     else:
         st.warning("Temperature data not available")
-
+c2.image('barcelona')
 # Row D
 # Fetch electricity prices for the previous day
 yesterday = datetime.datetime.now() - datetime.timedelta(days=0)
@@ -149,29 +148,16 @@ if fetch_button_pressed:
         # Append the price to the array
         prices.append(price)
 
-d1, d2, d3 = st.columns((5, 5, 2))
-with d1:
-    st.markdown('### Electricity Price Trend')
-    if fetch_button_pressed:
-        plt.plot(hours_of_day, prices, marker='o')
-        plt.title(f'Electricity Prices on {previous_day}')
-        plt.xlabel('Hour of the Day')
-        plt.ylabel('Electricity Price (€/kWh)')
-        st.pyplot(plt)
-    else:
-        st.warning("Please press the 'Fetch Electricity Prices' button.")
+st.markdown('### Electricity Price Trend')
+if fetch_button_pressed:
+    plt.plot(hours_of_day, prices, marker='o')
+    plt.title(f'Electricity Prices on {previous_day}')
+    plt.xlabel('Hour of the Day')
+    plt.ylabel('Electricity Price (€/kWh)')
+    st.pyplot(plt)
+else:
+    st.warning("Please press the 'Fetch Electricity Prices' button.")
 
-with d2:
-    st.markdown('### Statistics')
-    # Replace this with any statistics or summary you want to display
-    if fetch_button_pressed and temperatures and prices:
-        st.text(f"Average Temperature: {round(np.mean(temperatures), 2)} °C")
-        st.text(f"Average Electricity Price: {round(np.mean(prices), 2)} €/kWh")
-    elif fetch_button_pressed:
-        st.warning("Statistics not available")
-
-with d3:
-    pass  # Removed the content of the second column (previously combined trend)
 
 # Button to access the Receiver Statistics page
 if st.button("Receiver Statistics"):
