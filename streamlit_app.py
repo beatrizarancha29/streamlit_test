@@ -76,8 +76,8 @@ import streamlit as st
 st.markdown(
     """
     <style>
-        .blue-box {
-            background-color: #3498db;
+        .red-box {
+            background-color: #e74c3c;
             padding: 20px;
             border-radius: 10px;
             color: white;
@@ -91,7 +91,7 @@ st.markdown(
 )
 
 # Create a div with the specified class and display the text "Barcelona"
-st.markdown('<div class="blue-box">Barcelona</div>', unsafe_allow_html=True)
+st.markdown('<div class="red-box">Barcelona</div>', unsafe_allow_html=True)
 
 
 # Here starts the web app design
@@ -175,16 +175,18 @@ st.markdown(
 
 # Display Temperature metrics in a blue box
 with st.container():
-    with st.expander("Temperature Metrics", expanded=True):
-        if temperatures:
-            st.markdown('<div class="blue-box">Min: {:.2f} °C, Max: {:.2f} °C</div>'.format(min(temperatures), max(temperatures)), unsafe_allow_html=True)
-        else:
-            st.warning("Temperature data not available")
-
-# Display Electricity Price metric in a green box
-with st.container():
-    with st.expander("Electricity Metrics", expanded=True):
-        st.markdown('<div class="green-box">Current Electricity Price: {} €/kWh</div>'.format(get_electricity_price_for_date(datetime.datetime.now().strftime('%Y-%m-%d'), datetime.datetime.now().hour)), unsafe_allow_html=True)
+    with st.columns([1, 1]):
+        with st.expander("Metrics", expanded=True):
+            # Display Temperature metrics in a blue box
+            with st.container():
+                if temperatures:
+                    st.markdown('<div class="blue-box">Min: {:.2f} °C, Max: {:.2f} °C</div>'.format(min(temperatures), max(temperatures)), unsafe_allow_html=True)
+                else:
+                    st.warning("Temperature data not available")
+            
+            # Display Electricity Price metric in a green box
+            with st.container():
+                st.markdown('<div class="green-box">Current Electricity Price: {} €/kWh</div>'.format(get_electricity_price_for_date(datetime.datetime.now().strftime('%Y-%m-%d'), datetime.datetime.now().hour)), unsafe_allow_html=True)
 
 
 
