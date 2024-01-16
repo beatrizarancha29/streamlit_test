@@ -118,7 +118,7 @@ else:
 
 
 # Continue with existing metrics
-b2.metric("Electricity Price", get_electricity_price_for_date(datetime.datetime.now().strftime('%Y-%m-%d'), datetime.datetime.now().hour), "€/kWh")
+b2.metric("Current Electricity Price", get_electricity_price_for_date(datetime.datetime.now().strftime('%Y-%m-%d'), datetime.datetime.now().hour), "€/kWh")
 
 
 # Row C
