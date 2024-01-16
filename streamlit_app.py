@@ -173,7 +173,7 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# Display Temperature metrics in a blue box
+# Display the blue and green boxes next to each other
 with st.container():
     with st.columns([1, 1]):
         with st.expander("Metrics", expanded=True):
@@ -187,8 +187,9 @@ with st.container():
             # Display Electricity Price metric in a green box
             with st.container():
                 st.markdown('<div class="green-box">Current Electricity Price: {} €/kWh</div>'.format(get_electricity_price_for_date(datetime.datetime.now().strftime('%Y-%m-%d'), datetime.datetime.now().hour)), unsafe_allow_html=True)
-
-
+  
+       
+                  
 
 # Row C
 c1, c2 = st.columns((7, 3))
