@@ -116,8 +116,9 @@ if temperatures:
 else:
     b1.warning("Temperature data not available")
 
+
 # Continue with existing metrics
-b2.metric("Electricity Price", f"{round(min(0.10, 0.50), 2)} - {round(max(0.10, 0.50), 2)} €/kWh", "-")
+b2.metric("Electricity Price", get_electricity_price_for_date(datetime.datetime.now().strftime('%Y-%m-%d'), datetime.datetime.now().hour), "-")
 b3.metric("LED Status", "-", "-")
 b4.metric("LED Status", "-", "-")
 
