@@ -139,13 +139,13 @@ dates = [day['date'] for day in weather_data if 'date' in day]
 
 # Update the Temperature metric to display the entire month's forecast
 if temperatures:
-    b1.metric("Temperature", f"Min: {min(temperatures):.2f} °C, Max: {max(temperatures):.2f} °C", "-")
+    b1.metric("Temperature", f"Min: {min(temperatures):.2f} °C, Max: {max(temperatures):.2f} °C", "-", style="green")
 else:
     b1.warning("Temperature data not available")
 
-
 # Continue with existing metrics
-b2.metric("Current Electricity Price", get_electricity_price_for_date(datetime.datetime.now().strftime('%Y-%m-%d'), datetime.datetime.now().hour), "€/kWh")
+b2.metric("Current Electricity Price", get_electricity_price_for_date(datetime.datetime.now().strftime('%Y-%m-%d'), datetime.datetime.now().hour), "€/kWh", style="blue")
+
 
 
 # Row C
