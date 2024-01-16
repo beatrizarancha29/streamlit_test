@@ -174,23 +174,21 @@ st.markdown(
 )
 
 # Display the blue and green boxes next to each other
-b1, b2 = st.columns(2)
-with b1:
-    st.container():
-    with st.expander("Temperature Metrics", expanded=True):
-        if temperatures:
-            st.markdown('<div class="blue-box">Min: {:.2f} °C, Max: {:.2f} °C</div>'.format(min(temperatures), max(temperatures)), unsafe_allow_html=True)
-        else:
-            st.warning("Temperature data not available")
 
-# Display Electricity Price metric in a green box within b2
+with b1:
+    with st.container():
+        with st.expander("Temperature Metrics", expanded=True):
+            temperatures = [20.5, 25.0, 18.2]  # Example temperature data
+            if temperatures:
+                st.markdown('<div class="blue-box">Min: {:.2f} °C, Max: {:.2f} °C</div>'.format(min(temperatures), max(temperatures)), unsafe_allow_html=True)
+            else:
+                st.warning("Temperature data not available")
+
 with b2:
-    st.container():
-    with st.expander("Electricity Metrics", expanded=True):
-        st.markdown('<div class="green-box">Current Electricity Price: {} €/kWh</div>'.format(get_electricity_price_for_date(datetime.datetime.now().strftime('%Y-%m-%d'), datetime.datetime.now().hour)), unsafe_allow_html=True)
-  
-       
-                  
+    with st.container():
+        with st.expander("Electricity Metrics", expanded=True):
+            st.markdown('<div class="green-box">Current Electricity Price: {} €/kWh</div>'.format(get_electricity_price_for_date(datetime.datetime.now().strftime('%Y-%m-%d'), datetime.datetime.now().hour)), unsafe_allow_html=True)
+
 
 # Row C
 c1, c2 = st.columns((7, 3))
