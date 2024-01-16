@@ -122,22 +122,7 @@ b2.metric("Electricity Price", get_electricity_price_for_date(datetime.datetime.
 # Initialize variables to track the peak price and corresponding hour
 
 
-peak_price = float('-inf')
-peak_hour = None
-# Loop through each hour to fetch electricity prices
-for hour in hours_of_day:
-    price = get_electricity_price_for_date(previous_day, hour)
-    print(f"The electricity price for {previous_day} {hour} is {price} €/kWh at {hour}:00.")
-
-    # Append the price to the array
-    prices.append(price)
-
-    # Check if the current price is higher than the peak price
-    if price > peak_price:
-        peak_price = price
-        peak_hour = hour
-
-b3.metric("Peak Price", ":", peak_price," €/kWh")
+b3.metric("dummy ", ":", 6," €/kWh")
 b4.metric("LED Status", ":", "-")
 
 # Row C
