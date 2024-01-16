@@ -138,13 +138,53 @@ temperatures = [day['day'].get('avgtemp_c') for day in weather_data if 'day' in 
 dates = [day['date'] for day in weather_data if 'date' in day]
 
 # Update the Temperature metric to display the entire month's forecast
-if temperatures:
-    b1.metric("Temperature", f"Min: {min(temperatures):.2f} °C, Max: {max(temperatures):.2f} °C", "-", style="green")
-else:
-    b1.warning("Temperature data not available")
+st.markdown(
+    """
+    <style>
+        .blue-box {
+            background-color: #3498db;
+            padding: 20px;
+            border-radius: 10px;
+            color: white;
+            font-weight: bold;
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
 
-# Continue with existing metrics
-b2.metric("Current Electricity Price", get_electricity_price_for_date(datetime.datetime.now().strftime('%Y-%m-%d'), datetime.datetime.now().hour), "€/kWh", style="blue")
+# Set the background color to green
+st.markdown(
+    """
+    <style>
+        .green-box {
+            background-color: #2ecc71;
+            padding: 20px;
+            border-radius: 10px;
+            color: white;
+            font-weight: bold;
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
+# Display Temperature metrics in a blue box
+with st.container():
+    with st.expander("Temperature Metrics", expanded=True):
+        if temperatures:
+            st.markdown('<div class="blue-box">Min: {:.2f} °C, Max: {:.2f} °C</div>'.format(min(temperatures), max(temperatures)), unsafe_allow_html=True)
+        else:
+            st.warning("Temperature data not available")
+
+# Display Electricity Price metric in a green box
+with st.container():
+    with st.expander("Electricity Metrics", expanded=True):
+        st.markdown('<div class="green-box">Current Electricity Price: {} €/kWh</div>'.format(get_electricity_price_for_date(datetime.datetime.now().strftime('%Y-%m-%d'), datetime.datetime.now().hour)), unsafe_allow_html=True)
 
 
 
