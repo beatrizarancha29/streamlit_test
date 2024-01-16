@@ -133,7 +133,7 @@ with c1:
 
 # Row D
 # Fetch electricity prices for the previous day
-yesterday = datetime.datetime.now() - datetime.timedelta(days=1)
+yesterday = datetime.datetime.now() - datetime.timedelta(days=0)
 previous_day = yesterday.strftime('%Y-%m-%d')
 hours_of_day = range(24)
 prices = []
