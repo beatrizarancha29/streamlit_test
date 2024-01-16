@@ -118,9 +118,9 @@ else:
 
 
 # Continue with existing metrics
-b2.metric("Electricity Price", get_electricity_price_for_date(datetime.datetime.now().strftime('%Y-%m-%d'), datetime.datetime.now().hour), "-", "€/kWh")
-b3.metric("LED Status", ":", "-")
-b4.metric("LED Status", ":", "-")
+b2.metric("Electricity Price", get_electricity_price_for_date(datetime.datetime.now().strftime('%Y-%m-%d'), datetime.datetime.now().hour), "-")
+b3.metric("LED Status", "-", "-")
+b4.metric("LED Status", "-", "-")
 
 # Row C
 c1, c2 = st.columns((7, 3))
