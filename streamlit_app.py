@@ -118,10 +118,7 @@ else:
 
 
 # Continue with existing metrics
-b2.metric("Electricity Price", get_electricity_price_for_date(datetime.datetime.now().strftime('%Y-%m-%d'), datetime.datetime.now().hour), "-", '€/kWh")
-# Initialize variables to track the peak price and corresponding hour
-
-
+b2.metric("Electricity Price", get_electricity_price_for_date(datetime.datetime.now().strftime('%Y-%m-%d'), datetime.datetime.now().hour), "-", "€/kWh")
 b3.metric("dummy ", ":", 6," €/kWh")
 b4.metric("LED Status", ":", "-")
 
