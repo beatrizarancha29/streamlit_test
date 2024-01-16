@@ -75,10 +75,10 @@ st.markdown(
     <style>
         .blue-box {
             background-color: #3498db;
-            padding: 20px;
+            padding: 40px;
             border-radius: 10px;
             color: white;
-            text-align: center;
+            text-align: left;
         }
     </style>
     """,
